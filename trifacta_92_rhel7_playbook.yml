@@ -3,9 +3,7 @@
   become: true
 
 
-# tested install on RHEL 8 with AMI ami-08970fb2e5767e3b8
-# https://us-west-2.console.aws.amazon.com/ec2/v2/home?region=us-west-2#ImageDetails:imageId=ami-08970fb2e5767e3b8
-
+# tested install on RHEL-7.9_HVM-20210208-x86_64-0-Hourly2-GP2 with AMI ami-0c6e102894167eccf
 
 
   vars:
@@ -200,6 +198,34 @@
 
     - name: run update conf
       command: python3 {{upload_location}}/update_conf.py {{upload_location}}
+
+
+#    https://docs.trifacta.com/display/r092/Create+Encryption+Key+File
+    - name: check if encryption file exists
+      stat:
+        path: "/opt/trifacta/conf/.key/customerKey"
+      register: encyption_key
+
+    - name: Create encryption key with random UUID when it doesn't exist
+      when: not encyption_key.stat.exists
+      block:
+        - name: Create key driectory (/opt/trifacta/conf/.key/) if it does not exist
+          ansible.builtin.file:
+            path: '/opt/trifacta/conf/.key/'
+            state: directory
+            owner: 'root'
+            group: 'trifacta'
+            mode: '0640'
+
+        - set_fact: random_uuid="{{ 1000 | random | to_uuid }}"
+
+        - name: "Save encryption key"
+          copy:
+            content: "{{random_uuid}}"
+            dest: '/opt/trifacta/conf/.key/customerKey'
+            owner: 'root'
+            group: 'trifacta'
+            mode: '0640'
 
 
     - name: Start trifacta service, if not running
