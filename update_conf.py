@@ -1,5 +1,6 @@
 import json
 import sys
+import re
 from os.path import exists
 from shutil import copyfile
 from typing import List
@@ -24,12 +25,13 @@ class DynamicAccessNestedDict:
     def setval(self, keys: List, val: str) -> None:
         data = self.data
         val = val.strip()
-        lastkey = keys[-1].strip()
-        print(lastkey)
-        print("val: |" + val + "|")
+        lastkey = re.sub(r'_DOT_', ".", keys[-1].strip())
+        # print(lastkey)
+        # print("val: |" + val + "|")
 
         # when assigning drill down to *second* last key
         for k in keys[:-1]:
+            k = re.sub(r'_DOT_', ".", k)
             data = data[k]
 
         value = None
@@ -74,7 +76,7 @@ def read_conf_file():
 
     for line in config_file.readlines():
         line = line.strip()
-        if not line:
+        if not line: # ignore empty lines
             pass
         else:
             # ignore comment lines starting with #
