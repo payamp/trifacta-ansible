@@ -105,6 +105,11 @@
         enablerepo: local
         state: present
 
+    - name: jq dnf install
+      dnf:
+        name: 'jq'
+        state: present
+
     - name: install nodejs, nginx
       dnf:
         disablerepo: "*"
