@@ -6,6 +6,7 @@ from shutil import copyfile
 from typing import List
 
 
+
 #conf_dir = "/Users/ppayandeh/code/python/triconf/"
 template_file = "trifacta-conf.json.template"
 conf_dir = "/opt/trifacta/conf/"
